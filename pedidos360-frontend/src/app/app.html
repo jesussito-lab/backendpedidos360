@@ -1,0 +1,82 @@
+<div class="container">
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">P</div>
+      <div class="brand-name">Pedidos<span>360</span></div>
+    </div>
+    
+    <div class="user-section">
+      <ng-container *ngIf="loginDisplay">
+        <span class="user-badge">{{ usuario }}</span>
+        <button class="btn btn-danger" (click)="logout()">Cerrar Sesión</button>
+      </ng-container>
+      <button *ngIf="!loginDisplay" class="btn btn-primary" (click)="login()">
+        Iniciar Sesión (Azure AD)
+      </button>
+    </div>
+  </header>
+
+  <!-- Panel Principal Autenticado -->
+  <main *ngIf="loginDisplay" class="dashboard-grid">
+    <!-- Columna Izquierda: Catálogo -->
+    <section>
+      <h3 class="section-title">Catálogo de Productos</h3>
+      <div class="products-grid">
+        <div class="product-card" *ngFor="let p of productos">
+          <div>
+            <div class="product-header">
+              <h4>{{ p.nombre }}</h4>
+            </div>
+            <p class="product-desc">{{ p.descripcion }}</p>
+          </div>
+          
+          <div>
+            <div class="product-pricing">
+              <span class="price">${{ p.precio | number }}</span>
+              <span class="stock-tag" [ngClass]="p.stock > 0 ? 'in-stock' : 'out-stock'">
+                {{ p.stock > 0 ? p.stock + ' disp.' : 'Agotado' }}
+              </span>
+            </div>
+            <div class="card-actions">
+              <input type="number" class="quantity-input" [(ngModel)]="cantidades[p.id]" min="1" [max]="p.stock" [disabled]="p.stock <= 0">
+              <button class="btn btn-action" (click)="comprar(p)" [disabled]="p.stock <= 0">
+                Comprar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Columna Derecha: Mis Pedidos -->
+    <aside class="orders-panel">
+      <h3 class="section-title">Mis Pedidos Recientes</h3>
+      <div *ngIf="misPedidos.length === 0" style="color: var(--text-muted); font-size: 0.9rem;">
+        No registras compras previas.
+      </div>
+      
+      <div class="order-item" *ngFor="let ped of misPedidos">
+        <div class="order-top">
+          <span class="order-id">Orden #{{ ped.id }}</span>
+          <span class="order-status" [ngClass]="ped.estado === 'COMPLETADO' ? 'status-completado' : 'status-pendiente'">
+            {{ ped.estado }}
+          </span>
+        </div>
+        <div class="order-meta">
+          <span>{{ ped.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="order-total">${{ ped.total | number }}</div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Vista Sin Autenticar -->
+  <section *ngIf="!loginDisplay" class="hero-login">
+    <h2>Bienvenido a Pedidos360</h2>
+    <p>Accede con tu cuenta institucional para gestionar pedidos y visualizar el inventario disponible en tiempo real.</p>
+    <button class="btn btn-primary" (click)="login()" style="padding: 12px 24px; font-size: 1rem;">
+      Acceder con Azure Entra ID
+    </button>
+  </section>
+</div>

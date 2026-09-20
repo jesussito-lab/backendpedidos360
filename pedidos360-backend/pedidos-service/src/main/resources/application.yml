@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: pedidos-service
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/${DB_NAME:pedidos360_db}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/${AZURE_TENANT_ID:9bbaf63c-55ea-49c8-8c57-c3f3f4555c9d}/v2.0
+          jwk-set-uri: https://login.microsoftonline.com/${AZURE_TENANT_ID:9bbaf63c-55ea-49c8-8c57-c3f3f4555c9d}/discovery/v2.0/keys
